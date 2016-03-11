@@ -90,6 +90,13 @@ class DisenioController < ApplicationController
         gc.fill = 'white'
         gc.undercolor = 'black'
 
+	connection = Fog::Storage.new({
+	  :provider                 => 'AWS',
+	  :aws_access_key_id        => ENV["AWS_ACCESS_KEY_ID"],
+	  :aws_secret_access_key    => ENV["AWS_SECRET_ACCESS_KEY"]
+	})
+
+
         # the base image
         img = Magick::Image.read(direccion)[0].strip!
         print("[DESARROLLADOR] Lectura de la imagen\n")

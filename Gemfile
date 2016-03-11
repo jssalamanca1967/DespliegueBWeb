@@ -36,7 +36,7 @@ gem 'whenever', :require => false
 # Process with Images
 gem 'carrierwave', '0.10.0'
 gem 'mini_magick', '3.8.0'
-gem 'fog', '1.36.0'
+gem 'fog'
 gem 'rmagick'
 
 # FALTA LA GEMA DE MAIL
@@ -45,7 +45,11 @@ gem 'rmagick'
 gem 'will_paginate', '~> 3.0.6'
 gem 'bootstrap-will_paginate'
 
+# MYSQL
 gem 'mysql2'
+
+# Bucket
+gem 'aws-sdk'
 
 # Use Unicorn as the app server
 # gem 'unicorn'
