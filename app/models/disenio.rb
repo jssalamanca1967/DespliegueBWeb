@@ -2,7 +2,7 @@ class Disenio < ActiveRecord::Base
   belongs_to :proyecto
   self.per_page = 10
   mount_uploader :picture, PictureUploader
-  validate :validate_minimum_image_size
+  #validate :validate_minimum_image_size
   
   private
   # Validates the size of an uploaded picture.

@@ -4,10 +4,10 @@ require "active_record"
 
 ActiveRecord::Base.establish_connection ({
   :adapter => "mysql2",
-  :host => "desplieguebdev.c16ip1pycpgj.us-west-2.rds.amazonaws.com",
-  :username => "jssalamanca1967",
-  :password => "contrasenia.27",
-  :database => "DespliegueBDev",
+  :host => "dbtest.c7adyf7ogphu.us-west-2.rds.amazonaws.com",
+  :username => "cdsierra1199",
+  :password => "HaroldCastro201601",
+  :database => "designmatch",
   :port => "3306"})
 
 
@@ -76,4 +76,31 @@ directorio=connection.directories.get(ENV["AWSBucket"])
   @disenio.estado = "Disponible"
   @disenio.save
   #SenderMail.enviar(@disenio).deliver_now
+
+  ses = Aws::SES::Client.new(
+      region: 'us-west-2',
+      access_key_id: ENV['AWSAccessKeyId'],
+      secret_access_key: ENV['AWSSecretKey']
+  )
+
+  resp2 = ses.send_email({
+      source: "designmatch@outlook.com", # required
+      destination: { # required
+          to_addresses: ["#{@disenio.email_diseniador}", "js.salamanca1967@uniandes.edu.co"],
+      },
+      message: { # required
+          subject: { # required
+              data: "Tu disenio esta listo",
+          },
+          body: { # required
+              text: {
+                  data: "Leeeeel",
+              },
+              html: {
+                  data: "<p>Tu disenio, creado el #{@disenio.created_at} para el proyecto ya esta disponible.</p>",
+              },
+          },
+      },
+  })
+
 end

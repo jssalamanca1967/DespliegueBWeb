@@ -7,17 +7,17 @@
 development:
   adapter: mysql2
   encoding: utf8
-  database: DespliegueBDev
-  username: jssalamanca1967
-  password: contrasenia.27
-  host: desplieguebdev.c16ip1pycpgj.us-west-2.rds.amazonaws.com
+  database: designmatch
+  username: cdsierra1199
+  password: HaroldCastro201601
+  host: dbtest.c7adyf7ogphu.us-west-2.rds.amazonaws.com
   port: 3306
 
 production:
   adapter: mysql2
   encoding: utf8
-  database: DespliegueBDev
-  username: jssalamanca1967
-  password: contrasenia.27
-  host: desplieguebdev.c16ip1pycpgj.us-west-2.rds.amazonaws.com
+  database: designmatch
+  username: cdsierra1199
+  password: HaroldCastro201601
+  host: dbtest.c7adyf7ogphu.us-west-2.rds.amazonaws.com
   port: 3306

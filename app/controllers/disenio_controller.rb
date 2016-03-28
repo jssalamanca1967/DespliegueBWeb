@@ -22,7 +22,7 @@ class DisenioController < ApplicationController
     @proyecto = Proyecto.find(@disenio.proyecto_id)
     @empresa = Empresa.find(@proyecto.empresa_id)
     if(@disenio.save)
-      procesarImagen(@disenio)
+      #procesarImagen(@disenio)
       redirect_to "/empresas/#{@empresa.nombre_empresa}/#{@proyecto.id}"
     else
       render 'new'
