@@ -1,15 +1,5 @@
 #!/usr/bin/ruby
 require "rubygems"
-require "active_record"
-
-ActiveRecord::Base.establish_connection ({
-  :adapter => "mysql2",
-  :host => "dbtest.c7adyf7ogphu.us-west-2.rds.amazonaws.com",
-  :username => "cdsierra1199",
-  :password => "HaroldCastro201601",
-  :database => "designmatch",
-  :port => "3306"})
-
 
 connection = Fog::Storage.new({
   :provider                 => 'AWS',
@@ -20,13 +10,29 @@ connection = Fog::Storage.new({
 })
 directorio=connection.directories.get(ENV["AWSBucket"])
 
-@disenios = Disenio.where(estado: "En proceso")
-@disenios.each do |d|
+sqs = Aws::SQS::Client.new(
+          region: 'us-west-2',
+          access_key_id: ENV['AWSAccessKeyId'],
+          secret_access_key: ENV['AWSSecretKey']
+      )
+#resp = sqs.receive_message({
+#  queue_url: "https://sqs.us-west-2.amazonaws.com/364477857468/mensajes", # required
+#  max_number_of_messages: 1,
+#  visibility_timeout: 1,
+#  wait_time_seconds: 1,
+#})
+
+poller = Aws::SQS::QueuePoller.new('https://sqs.us-west-2.amazonaws.com/364477857468/mensajes', client: sqs)
+poller.poll do |resp|
+  mensaje = JSON.parse(resp.body)
+
   print("---------REGISTRO---------")
-  @disenio = d
-  print("Entro")
-  direccion = "#{@disenio.picture.path}"
-  print("Paso Direccion con correo #{@disenio.email_diseniador}\n")
+  direccion = mensaje["d_direccion"]
+  correo = mensaje["d_correo"]
+  nombre = mensaje["d_nombrediseniador"]
+  fecha = mensaje["d_fechacreacion"]
+  print("Paso Direccion con correo #{correo}\n")
+
   width = 800
   height = 600
 
@@ -52,8 +58,8 @@ directorio=connection.directories.get(ENV["AWSBucket"])
   print("[DESARROLLADOR] Resize\n")
   # label the image with the method name
 
-  print("[DESARROLLADOR] #{@disenio.created_at}")
-  mensaje = "#{@disenio.nombre_diseniador} ::: #{@disenio.created_at}"
+  print("[DESARROLLADOR] #{fecha}")
+  mensaje = "#{nombre} ::: #{fecha}"
 
   lbl = Magick::Image.new(width, height)
   gc.annotate(ximg, 0, 0, 0, 0, mensaje)
@@ -73,8 +79,8 @@ directorio=connection.directories.get(ENV["AWSBucket"])
   #newimg.save
 
   print("PROCESANDO #{direccion}\n")
-  @disenio.estado = "Disponible"
-  @disenio.save
+  ##@disenio.estado = "Disponible"
+  ##@disenio.save
   #SenderMail.enviar(@disenio).deliver_now
 
   ses = Aws::SES::Client.new(
@@ -86,7 +92,7 @@ directorio=connection.directories.get(ENV["AWSBucket"])
   resp2 = ses.send_email({
       source: "designmatch@outlook.com", # required
       destination: { # required
-          to_addresses: ["#{@disenio.email_diseniador}", "js.salamanca1967@uniandes.edu.co"],
+          to_addresses: ["#{correo}", "js.salamanca1967@uniandes.edu.co"],
       },
       message: { # required
           subject: { # required
@@ -97,10 +103,9 @@ directorio=connection.directories.get(ENV["AWSBucket"])
                   data: "Leeeeel",
               },
               html: {
-                  data: "<p>Tu disenio, creado el #{@disenio.created_at} para el proyecto ya esta disponible.</p>",
+                  data: "<h1>Hola #{nombre}</h1><br><p>Tu disenio, creado el #{fecha} para el proyecto ya esta disponible.</p>",
               },
           },
       },
   })
-
 end
